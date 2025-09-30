@@ -619,3 +619,46 @@ footer{max-width:var(--max-width);margin:1rem auto;padding:1rem;color:var(--mute
 
   </script></body>
 </html>
+<script>
+  // ---------- تحديث submitOrder لإرسال الطلب للبوت تلغرام ----------
+  function submitOrder(){
+    const name = document.getElementById('checkoutName').value.trim();
+    const phone = document.getElementById('checkoutPhone').value.trim();
+    const address = document.getElementById('checkoutAddress').value.trim();
+    if(!name || !phone || !address){ return alert('يرجى تعبئة جميع الحقول'); }
+
+    // جمع تفاصيل الطلب
+    const order = {
+      id: 'ORD-' + Date.now(),
+      name, phone, address,
+      items: state.cart.map(ci=>{
+        const p = products.find(p=>p.id===ci.productId);
+        return { title: pT(p), qty: ci.qty, price: p.price };
+      }),
+      total: state.cart.reduce((s,i)=> s + (products.find(p=>p.id===i.productId).price * i.qty), 0),
+      createdAt: new Date().toISOString()
+    };
+
+    // إرسال الطلب للبوت تلغرام
+    const message = `طلب جديد من شمسو شوب:\n\n` +
+                    `الاسم: ${order.name}\n` +
+                    `الهاتف: ${order.phone}\n` +
+                    `العنوان: ${order.address}\n` +
+                    `المجموع: ${order.total} دج\n` +
+                    `المنتجات:\n` +
+                    order.items.map(it=>`${it.title} x${it.qty} = ${it.price*it.qty} دج`).join('\n');
+
+    fetch(`https://api.telegram.org/bot7022107380:AAHxP3CKsxgP5j1_pu6u3H7gt7zk6Vau2E8/sendMessage`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ chat_id: '7322862802', text: message })
+    });
+
+    // تفريغ السلة
+    state.cart = [];
+    updateCartUI();
+    closeModal();
+    toggleCart(false);
+    alert('تم إرسال الطلب بنجاح! رقم الطلب: ' + order.id);
+  }
+</script>
