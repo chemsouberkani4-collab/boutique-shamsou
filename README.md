@@ -1,4 +1,3 @@
-<!DOCTYPE html><html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -619,58 +618,3 @@ footer{max-width:var(--max-width);margin:1rem auto;padding:1rem;color:var(--mute
 
   </script></body>
 </html>
-<script>
-  // ---------- إرسال الطلب لبوت تيليجرام ----------
-  function sendOrderToTelegram(order) {
-    const token = '7322862802:AAHxP3CKsxgP5j1_pu6u3H7gt7zk6Vau2E8'; // توكن البوت
-    const chat_id = '7022107380'; // رقم شمسو
-    const text = `
-طلب جديد من شمسو شوب!
-رقم الطلب: ${order.id}
-الاسم: ${order.name}
-الهاتف: ${order.phone}
-العنوان: ${order.address}
-المجموع: ${order.total} دج
-المنتجات:
-${order.items.map(i=>{
-  const p = products.find(x=>x.id===i.productId);
-  return `- ${p ? pT(p) : i.productId} × ${i.qty}`;
-}).join('\n')}
-    `;
-
-    fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id, text })
-    })
-    .then(res => res.json())
-    .then(data => console.log('Telegram response:', data))
-    .catch(err => console.error('Telegram error:', err));
-  }
-
-  // تعديل submitOrder لإرسال الطلب للبوت
-  const oldSubmitOrder = submitOrder;
-  submitOrder = function() {
-    const name = document.getElementById('checkoutName').value.trim();
-    const phone = document.getElementById('checkoutPhone').value.trim();
-    const address = document.getElementById('checkoutAddress').value.trim();
-    if(!name || !phone || !address){ return alert('يرجى تعبئة جميع الحقول'); }
-
-    const order = {
-      id: 'ORD-' + Date.now(),
-      name, phone, address,
-      items: state.cart.map(ci=>({ productId:ci.productId, qty:ci.qty })),
-      total: state.cart.reduce((s,i)=> s + (products.find(p=>p.id===i.productId).price * i.qty), 0),
-      createdAt: new Date().toISOString()
-    };
-
-    sendOrderToTelegram(order); // <-- هنا نرسل الطلب للبوت
-
-    // تفريغ السلة وحفظ محليًا
-    state.cart = [];
-    updateCartUI();
-    closeModal();
-    toggleCart(false);
-    alert('تم إرسال الطلب بنجاح! رقم الطلب: ' + order.id);
-  };
-</script>
