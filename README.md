@@ -563,7 +563,7 @@ footer{max-width:var(--max-width);margin:1rem auto;padding:1rem;color:var(--mute
       modalBody.innerHTML = `
         <div style="padding:1rem;grid-column:1/-1">
           <h3>نموذج الدفع</h3>
-          <p class="small text-muted">املأ المعلومات وسيتم محاكاة إرسال الطلب (لا يوجد باك‑إند في هذا المثال).</p>
+          <p class="small text-muted"املأ المعلومات وسيتم ارسال الطلب).</p>
           <div style="display:flex;flex-direction:column;gap:.6rem;margin-top:1rem">
             <input id="checkoutName" placeholder="الاسم الكامل" style="padding:.6rem;border-radius:8px;border:1px solid #eee" />
             <input id="checkoutPhone" placeholder="رقم الهاتف" style="padding:.6rem;border-radius:8px;border:1px solid #eee" />
